@@ -53,28 +53,39 @@ kSpace(:,delements,:,:) = [];
 kSpacePics = permute(kSpace,[5 ,3 ,4 ,1 ,6 ,2 ,7 ,8 ,9 ,10,11,12,13,14]);
 
 
+% Do a simple bart reconstruction of the individual images first
+sensitivities = ones(size(kSpacePics));
+picsCommand = 'pics -RW:6:0:0.001 ';
+images = bart(app,picsCommand,kSpacePics,sensitivities);
+
+
+% Do a phase correction
+phaseImages = angle(images);
+images = images.*exp(-1i.*phaseImages);
+kSpacePics = bart(app,'fft -u 6',images);
+
+
 % Prepare the inversion times matrix
-TI(1,1,1,1,1,:) = tis*0.00001; 
+TI(1,1,1,1,1,:) = tis*0.001; 
 
 
 % Moba reco
-picscommand = 'moba -L -d4 -l1 -i8 -C100 -B0.0 -j0.1 -n';
-t1Fit = bart(app,picscommand,kSpacePics,TI);
+bartCommand = 'moba -L -l1 -d4 -i8 -C100 -B0.0 -j0.01 -n ';
+T1fit = bart(app,bartCommand,kSpacePics,TI);
 
-t1Fits(:,:,:,:,:,:,1) = t1Fit(:,:,:,:,:,:,2);
-t1Fits(:,:,:,:,:,:,2) = t1Fit(:,:,:,:,:,:,1);
-t1Fits(:,:,:,:,:,:,3) = t1Fit(:,:,:,:,:,:,3);
+T1fits(1,:,:,1,1,1,1) = T1fit(1,:,:,1,1,1,1);
+T1fits(1,:,:,1,1,1,2) = T1fit(1,:,:,1,1,1,2);
+T1fits(1,:,:,1,1,1,3) = T1fit(1,:,:,1,1,1,3);
 
 
 % Calculate T1 map
-T1map = 10000*bart(app,'looklocker ',t1Fits);
+T1map = bart(app,'looklocker ',T1fits);
+T1map = flip(T1map,3);
+T1map = 1000*squeeze(T1map(1,:,:));
 
 
-% Extract Mss, M0, R1*
-Mssmap = flip(squeeze(t1Fit(1,:,:,1,1,1,1)),2);
-M0map = flip(squeeze(t1Fit(1,:,:,1,1,1,2)),2);
-R1map = flip(squeeze(t1Fit(1,:,:,1,1,1,3)),2);
-T1map = flip(T1map,2);
+% Extract M0
+M0map = flip(squeeze(T1fit(1,:,:,1,1,1,2)),2);
 
 
 % Remove outliers
@@ -82,13 +93,11 @@ T1map(isinf(T1map)) = 0;
 T1map(isnan(T1map)) = 0;
 M0map(isinf(M0map)) = 0;
 M0map(isnan(M0map)) = 0;
-Mssmap(isinf(Mssmap)) = 0;
-Mssmap(isnan(Mssmap)) = 0;
 
 
 % Masking
 t1MapOut = abs(T1map).*squeeze(app.mask(:,:,slice,dynamic));
-m0MapOut = abs(Mssmap).*squeeze(app.mask(:,:,slice,dynamic));
+m0MapOut = abs(M0map).*squeeze(app.mask(:,:,slice,dynamic));
 
 
 app.TextMessage('WARNING: MODEL BASED T1 FITTING IS WORK IN PROGRESS ...');
