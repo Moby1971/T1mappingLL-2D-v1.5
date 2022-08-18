@@ -12,9 +12,6 @@ function [m0MapOut, t1MapOut] = dothemobaT1fit(app, slice, dynamic)
 %------------------------------------------------------------
 
 
-app.TextMessage('WARNING: MODEL BASED T1 FITTING IS WORK IN PROGRESS ...');
-
-
 % Multicoil data
 for k = 1:app.nrCoils
     kSpace(k,:,:,:) = squeeze(app.data{k}(:,:,:,slice,dynamic)); %#ok<AGROW> 
@@ -58,10 +55,11 @@ sensitivities = ones(size(kSpacePics));
 picsCommand = 'pics -RW:6:0:0.001 ';
 images = bart(app,picsCommand,kSpacePics,sensitivities);
 
+imageCorr = images(:,:,:,:,:,1,:);
 
 % Do a phase correction
-phaseImages = angle(images);
-images = images.*exp(-1i.*phaseImages);
+phaseImage = angle(imageCorr);
+images = images.*exp(-1i.*phaseImage);
 kSpacePics = bart(app,'fft -u 6',images);
 
 
@@ -99,8 +97,6 @@ M0map(isnan(M0map)) = 0;
 t1MapOut = abs(T1map).*squeeze(app.mask(:,:,slice,dynamic));
 m0MapOut = abs(M0map).*squeeze(app.mask(:,:,slice,dynamic));
 
-
-app.TextMessage('WARNING: MODEL BASED T1 FITTING IS WORK IN PROGRESS ...');
 
 
 end
