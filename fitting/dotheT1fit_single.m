@@ -1,4 +1,4 @@
-function [AvalueOut,BvalueOut,m0ValueOut,t1ValueOut,r2ValueOut] = dotheT1fit_single(yData,tis,rSquare,tiSelection)
+function [AvalueOut,BvalueOut,m0ValueOut,t1ValueOut,r2ValueOut] = dotheT1fit_single(yData,tis,~,tiSelection)
 
 %------------------------------------------------------------
 %
@@ -39,13 +39,6 @@ func = abs(x(1)-x(2).*exp(x(3).*tis'));
 rss = sum((yData-func).^2);
 tss = sum((yData-mean(yData)).^2);
 r2Value = 1-rss/tss;
-
-% Check for low R-square
-if r2Value < rSquare
-    m0Value = 0;
-    t1Value = 0;
-    r2Value = 0;
-end
 
 % Some limits
 t1Value(isnan(t1Value)) = 0;

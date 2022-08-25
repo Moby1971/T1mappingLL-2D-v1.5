@@ -4,7 +4,7 @@ function [m0MapOut, t1MapOut] = dothemobaT1fitdyn(app, slice, dynamicRange)
 % Performs a model-based T1 map fitting of multi-echo data for 1 slice
 % and all dynamics
 %
-% MOBA does not seem to work for multiple dynamics
+% MOBAFIT does not seem to work for multiple dynamics
 %
 % Gustav Strijkers
 % Amsterdam UMC
