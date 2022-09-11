@@ -47,7 +47,7 @@ for dynamic = 1:dimd
         dcm_header(slice,dynamic).InstitutionAddress = 'Amsterdam, Netherlands';
         dcm_header(slice,dynamic).TemporalPositionIdentifier = dynamic;
         dcm_header(slice,dynamic).NumberOfTemporalPositions = dimd;
-        dcm_header(slice,dynamic).ImagesInAcquisition = dimz*dimd;
+        %dcm_header(slice,dynamic).ImagesInAcquisition = dimz*dimd;
         dcm_header(slice,dynamic).TemporalResolution = parameters.prep_delay + parameters.NO_ECHOES*parameters.ti; 
 
     end
@@ -94,6 +94,7 @@ for dynamic = 1:dimd
 
         fn = ['0000',num2str(slice)];
         fn = fn(size(fn,2)-4:size(fn,2));
+
         dn = ['0000',num2str(dynamic)];
         dn = dn(size(dn,2)-4:size(dn,2));
 

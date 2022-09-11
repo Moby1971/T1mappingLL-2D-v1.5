@@ -20,7 +20,11 @@ function dicom_header = generate_dicomheader_t1(parameters,slice,dynamic,dimx,di
 %
 %
 
-studyname = str2num(parameters.filename(end-9:end-6)); %#ok<ST2NM> 
+try
+    studyname = str2num(parameters.filename(end-9:end-6)); %#ok<ST2NM>
+catch
+    studyname = '111';
+end
 
 aspectratio = parameters.FOVf/8;  % apect ratio, needs to be checked
 acq_dur = parameters.NO_VIEWS * parameters.tr * parameters.NO_AVERAGES/1000;   % acquisition time in seconds
@@ -30,7 +34,9 @@ pixely = parameters.FOV/dimy;
 
 fn = ['0000',num2str(slice)];
 fn = fn(size(fn,2)-4:size(fn,2));
-fname = ['cine_',fn,'.dcm'];
+dn = ['0000',num2str(dynamic)];
+dn = dn(size(dn,2)-4:size(dn,2));
+fname = ['T1-slice',fn,'-dynamic',dn,'.dcm'];
 
 dt = datetime(parameters.date,'InputFormat','dd-MMM-yyyy HH:mm:ss');
 year = num2str(dt.Year);
@@ -179,7 +185,6 @@ dcmhead.FrameOfReferenceUID = '';
 dcmhead.TemporalPositionIdentifier = dynamic;
 dcmhead.NumberOfTemporalPositions = dimd;
 dcmhead.TemporalResolution = parameters.prep_delay + parameters.NO_ECHOES*parameters.ti;    % ms or seconds ?
-dcmhead.ImagesInAcquisition = dimz*dimd;
 dcmhead.SliceLocation = (slice-round(parameters.NO_SLICES/2))*(parameters.SLICE_SEPARATION/parameters.SLICE_INTERLEAVE);
 dcmhead.ImageComments = '';
 dcmhead.TemporalPositionIndex = uint32([]);
