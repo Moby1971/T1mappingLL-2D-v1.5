@@ -1,3 +1,13 @@
+%------------------------------------------------------------
+%
+% Gustav Strijkers
+% Amsterdam UMC
+% g.j.strijkers@amsterdamumc.nl
+% 26/4/2023
+%
+%------------------------------------------------------------
+
+
 function output = circtukey2D(dimy,dimx,row,col,filterwidth)
 
 % 2D Tukey filter

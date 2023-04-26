@@ -1,23 +1,44 @@
+%------------------------------------------------------------
+%
+% Gustav Strijkers
+% Amsterdam UMC
+% g.j.strijkers@amsterdamumc.nl
+% 26/4/2023
+%
+%------------------------------------------------------------
+
+
 function data = sort2DsegmKspaceMRD(data, parameters)
 
+% PPL version
+version = regexp(parameters.PPL,'\d*','Match');
+version = str2num(cell2mat(version(end))); %#ok<ST2NM>
+crit1 = version > 634;
 
-% data = (echoes, dimx, dimy, dimz, dynamics)
+% FLASH yes or no ?
+crit2 = contains(parameters.PPL,"flash");
 
-[ne, dimx, dimy, dimz, nrd] = size(data);
+if crit1 && crit2
 
-nrLines = parameters.lines_per_segment;
+    % data = (echoes, dimx, dimy, dimz, dynamics)
 
-for slices = 1:dimz
+    [ne, dimx, dimy, dimz, nrd] = size(data);
 
-    for dynamic = 1:nrd
+    nrLines = parameters.lines_per_segment;
 
-        ks = squeeze(data(:,:,:,slices,dynamic));
-        ks = permute(ks,[1 3 2]);
-        ks = reshape(ks(:),[nrLines ne dimy/nrLines dimx]);
-        ks = permute(ks,[2 1 3 4]);
-        ks = reshape(ks(:),[ne dimy dimx]);
-        ks = permute(ks,[1 3 2]);
-        data(:,:,:,slices,dynamic) = ks(:,:,:);
+    for slices = 1:dimz
+
+        for dynamic = 1:nrd
+
+            ks = squeeze(data(:,:,:,slices,dynamic));
+            ks = permute(ks,[1 3 2]);
+            ks = reshape(ks(:),[nrLines ne dimy/nrLines dimx]);
+            ks = permute(ks,[2 1 3 4]);
+            ks = reshape(ks(:),[ne dimy dimx]);
+            ks = permute(ks,[1 3 2]);
+            data(:,:,:,slices,dynamic) = ks(:,:,:);
+
+        end
 
     end
 
