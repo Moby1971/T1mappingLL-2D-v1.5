@@ -55,30 +55,24 @@ for dynamic = 1:dimd
 end
 
 % create folders if not exist, and delete folders content
-dir1 = dcm_header(1).PatientID;
-dir2 = 'DICOM';
-dir3 = strcat(num2str(dcm_header(1).SeriesNumber),'T1');
-dir41 = '1';
-dir42 = '2';
-dir43 = '3';
+outDir1 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"1");
+outDir2 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"2");
+outDir3 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"3");
 
-output_directory1 = strcat(directory,filesep,dir1,filesep,dir2,filesep,dir3,filesep,dir41);
-if (~exist(output_directory1, 'dir'))
-    mkdir(fullfile(directory, dir1,dir2,dir3,dir41));
+if ~exist(outDir1, 'dir')
+    mkdir(outDir1);
 end
-delete([output_directory1,filesep,'*']);
+delete(strcat(outDir1,filesep,'*'));
 
-output_directory2 = strcat(directory,filesep,dir1,filesep,dir2,filesep,dir3,filesep,dir42);
-if (~exist(output_directory2, 'dir'))
-    mkdir(fullfile(directory, dir1,dir2,dir3,dir42));
+if ~exist(outDir2, 'dir')
+    mkdir(outDir2);
 end
-delete([output_directory2,filesep,'*']);
+delete(strcat(outDir2,filesep,'*'));
 
-output_directory3 = strcat(directory,filesep,dir1,filesep,dir2,filesep,dir3,filesep,dir43);
-if (~exist(output_directory3, 'dir'))
-    mkdir(fullfile(directory, dir1,dir2,dir3,dir43));
+if ~exist(outDir3, 'dir')
+    mkdir(outDir3);
 end
-delete([output_directory3,filesep,'*']);
+delete(strcat(outDir3,filesep,'*'));
 
 
 
@@ -98,7 +92,7 @@ for dynamic = 1:dimd
         dn = ['0000',num2str(dynamic)];
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = [output_directory1,filesep,'T1-slice',fn,'-dynamic',dn,'.dcm'];
+        fname = strcat(outDir1,filesep,'T1-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(t1map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 
@@ -123,7 +117,7 @@ for dynamic = 1:dimd
         dn = ['0000',num2str(dynamic)];
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = [output_directory2,filesep,'M0-slice',fn,'-dynamic',dn,'.dcm'];
+        fname = strcat(outDir2,filesep,'M0-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(m0map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 
@@ -148,7 +142,7 @@ for dynamic = 1:dimd
         dn = ['0000',num2str(dynamic)];
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = [output_directory3,filesep,'R2-slice',fn,'-dynamic',dn,'.dcm'];
+        fname = strcat(outDir3,filesep,'R2-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(100*r2map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 
