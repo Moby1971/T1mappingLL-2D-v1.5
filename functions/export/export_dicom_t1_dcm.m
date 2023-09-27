@@ -39,7 +39,7 @@ for dynamic = 1:dimd
     for slice = 1:dimz
 
         % Read the Dicom header
-        dcm_header(slice,dynamic) = dicominfo([dcm_files_path,filesep,files{ (dynamic-1)*dimz*dimr + (slice-1)*dimr + 1 }]); %#ok<*AGROW>
+        dcm_header(slice,dynamic) = dicominfo(strcat(dcm_files_path,filesep,files{ (dynamic-1)*dimz*dimr + (slice-1)*dimr + 1 })); %#ok<*AGROW>
 
         % Changes some tags
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\';
@@ -86,10 +86,10 @@ for dynamic = 1:dimd
         dcm_header(slice,dynamic).EchoTime = 1.1;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\T1';
 
-        fn = ['0000',num2str(slice)];
+        fn = strcat('0000',num2str(slice));
         fn = fn(size(fn,2)-4:size(fn,2));
 
-        dn = ['0000',num2str(dynamic)];
+        dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
         fname = strcat(outDir1,filesep,'T1-slice',fn,'-dynamic',dn,'.dcm');
@@ -112,9 +112,9 @@ for dynamic = 1:dimd
         dcm_header(slice,dynamic).EchoTime = 1.2;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\M0';
 
-        fn = ['0000',num2str(slice)];
+        fn = strcat('0000',num2str(slice));
         fn = fn(size(fn,2)-4:size(fn,2));
-        dn = ['0000',num2str(dynamic)];
+        dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
         fname = strcat(outDir2,filesep,'M0-slice',fn,'-dynamic',dn,'.dcm');
@@ -137,9 +137,9 @@ for dynamic = 1:dimd
         dcm_header(slice,dynamic).EchoTime = 1.3;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\R2';
 
-        fn = ['0000',num2str(slice)];
+        fn = strcat('0000',num2str(slice));
         fn = fn(size(fn,2)-4:size(fn,2));
-        dn = ['0000',num2str(dynamic)];
+        dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
         fname = strcat(outDir3,filesep,'R2-slice',fn,'-dynamic',dn,'.dcm');

@@ -7,7 +7,7 @@ function export_gif_t1(gifexportpath,t1map,m0map,r2map,tag,T1MapScale,t1cmap,m0c
 % Gustav Strijkers
 % Amsterdam UMC
 % g.j.strijkers@amsterdamumc.nl
-% 12/08/2022
+% Sept 2023
 %
 %------------------------------------------------------------
 
@@ -42,7 +42,7 @@ if dimd > 1
 
         for dynamic = 1:dimd
 
-            image = uint8(round((255/T1MapScale)*resizem(squeeze(t1map(:,:,slice,dynamic)),[numrows numcols]))); %#ok<*RESZM> 
+            image = uint8(round((255/T1MapScale)*imresize(squeeze(t1map(:,:,slice,dynamic)),[numrows numcols]))); %#ok<*RESZM> 
 
             if isfield(parameters, 'PHASE_ORIENTATION')
                 if parameters.PHASE_ORIENTATION
@@ -64,7 +64,7 @@ else
     % Animated gif per slice
     for slice = 1:dimz
 
-        image = uint8(round((255/T1MapScale)*resizem(squeeze(t1map(:,:,slice,1)),[numrows numcols])));
+        image = uint8(round((255/T1MapScale)*imresize(squeeze(t1map(:,:,slice,1)),[numrows numcols])));
 
         if isfield(parameters, 'PHASE_ORIENTATION')
             if parameters.PHASE_ORIENTATION
@@ -103,7 +103,7 @@ if dimd > 1
 
             % automatic grayscale mapping is used for the gif export
             % the m0map therefore needs to be mapped onto the range of [0 255]
-            image = uint8(round((255/m0scale)*resizem(squeeze(m0map(:,:,slice,dynamic)),[numrows numcols])));
+            image = uint8(round((255/m0scale)*imresize(squeeze(m0map(:,:,slice,dynamic)),[numrows numcols])));
 
             if isfield(parameters, 'PHASE_ORIENTATION')
                 if parameters.PHASE_ORIENTATION
@@ -132,7 +132,7 @@ else
 
         % automatic grayscale mapping is used for the gif export
         % the m0map therefore needs to be mapped onto the range of [0 255]
-        image = uint8(round((255/m0scale)*resizem(squeeze(m0map(:,:,slice)),[numrows numcols])));
+        image = uint8(round((255/m0scale)*imresize(squeeze(m0map(:,:,slice)),[numrows numcols])));
 
         if isfield(parameters, 'PHASE_ORIENTATION')
             if parameters.PHASE_ORIENTATION
@@ -171,7 +171,7 @@ if dimd > 1
             % scale R-square map from 0 - 100
             r2scale = 100;
 
-            image = uint8(round((255/r2scale)*resizem(squeeze(100*r2map(:,:,slice,dynamic)),[numrows numcols])));
+            image = uint8(round((255/r2scale)*imresize(squeeze(100*r2map(:,:,slice,dynamic)),[numrows numcols])));
 
             if isfield(parameters, 'PHASE_ORIENTATION')
                 if parameters.PHASE_ORIENTATION
@@ -197,7 +197,7 @@ else
         % scale R-square map from 0 - 100
         r2scale = 100;
 
-        image = uint8(round((255/r2scale)*resizem(squeeze(100*r2map(:,:,slice)),[numrows numcols])));
+        image = uint8(round((255/r2scale)*imresize(squeeze(100*r2map(:,:,slice)),[numrows numcols])));
 
         if isfield(parameters, 'PHASE_ORIENTATION')
             if parameters.PHASE_ORIENTATION
