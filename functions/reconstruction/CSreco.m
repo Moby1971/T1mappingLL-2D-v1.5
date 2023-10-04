@@ -14,14 +14,14 @@ function images = CSreco(app)
 
 % Multi-receiver data
 for coil = 1:app.nrCoils
-    kSpace(coil,:,:,:,:,:) = app.data{coil}; %#ok<AGROW> 
+    kSpace(coil,:,:,:,:,:) = app.data{coil}; %#ok<AGROW>
 end
 
 
 % Bart dimensions
-% 	READ_DIM,       1   z  
-% 	PHS1_DIM,       2   y  
-% 	PHS2_DIM,       3   x  
+% 	READ_DIM,       1   z
+% 	PHS1_DIM,       2   y
+% 	PHS2_DIM,       3   x
 % 	COIL_DIM,       4   coils
 % 	MAPS_DIM,       5   sense maps
 % 	TE_DIM,         6   TIs
@@ -30,15 +30,15 @@ end
 % 	ITER_DIM,       9
 % 	CSHIFT_DIM,     10
 % 	TIME_DIM,       11  dynamics
-% 	TIME2_DIM,      12  
+% 	TIME2_DIM,      12
 % 	LEVEL_DIM,      13
 % 	SLICE_DIM,      14  slices
 % 	AVG_DIM,        15
 
 
-%          1      2   3  4     5       6     
+%          1      2   3  4     5       6
 % kspace = coils, ir, x, y, slices, dynamics
-% 
+%
 %                            0  1  2  3  4  5  6  7  8  9  10 11 12 13
 %                            1  2  3  4  5  6  7  8  9  10 11 12 13 14
 kSpacePics = permute(kSpace,[7 ,3 ,4 ,1 ,8 ,2 ,9 ,10,11,12,6 ,13,14,5 ]);
@@ -49,7 +49,30 @@ sensitivities = ones(size(kSpacePics));
 
 
 % Pics command
-picsCommand = 'pics -RW:6:0:0.001 -RT:1024:0:0.1 ';
+picsCommand = 'pics';
+
+if app.WVxyzEditField.Value > 0
+    picsCommand = [picsCommand,' -RW:6:0:',num2str(app.WVxyzEditField.Value)];
+end
+
+if app.TVxyzEditField.Value > 0
+    picsCommand = [picsCommand,' -RT:6:0:',num2str(app.TVxyzEditField.Value)];
+end
+
+if app.LLRxyzEditField.Value > 0
+    blocksize = round(size(kSpacePics,3)/16);
+    blocksize(blocksize < 8) = 8;
+    picsCommand = [picsCommand,' -RL:6:7:',num2str(app.LLRxyzEditField.Value),' -b',num2str(blocksize)];
+end
+
+if app.TVteEditField.Value > 0
+    picsCommand = [picsCommand,' -RT:32:0:',num2str(app.TVteEditField.Value)];
+end
+
+if app.TVdynEditField.Value > 0
+    picsCommand = [picsCommand,' -RT:1024:0:',num2str(app.TVdynEditField.Value)];
+end
+
 
 
 % Bart reconstruction
