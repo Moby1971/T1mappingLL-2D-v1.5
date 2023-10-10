@@ -14,6 +14,19 @@ app.TextMessage('Image registration ...');
 
 try
 
+    % Temp directory for storing registration files
+    if ispc
+        outputDir = 'C:\tmp\';
+        if ~exist(outputDir, 'dir')
+            mkdir(outputDir);
+        end
+    else
+        outputDir = [];
+    end
+
+    [~,elastix_version] = system('elastix --version');
+    app.TextMessage(elastix_version);
+  
     switch app.RegistrationDropDown.Value
         case 'Translation'
             fileName = 'regParsTrans.txt';
@@ -60,7 +73,7 @@ try
                 image1 = squeeze(imagesIn(echo,:,:,slice,dynamic));
 
                 % Register
-                image2 = elastix(image1,image0,[],regParFile);
+                image2 = elastix(image1,image0,outputDir,regParFile);
 
                 % New registered image
                 imagesIn(echo,:,:,slice,dynamic) = image2;
