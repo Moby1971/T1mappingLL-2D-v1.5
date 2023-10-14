@@ -18,12 +18,15 @@ if ispc
     setenv('LD_LIBRARY_PATH', '');
 
     % Decided to use c:\temp as temp directory. Hopefully this prevents issues
-    name = 'C:\tmp\';
-    if ~exist(name, 'dir')
-        mkdir(name);
+    try
+        name = strcat(tempname('C:\tmp'),filesep);
+        if ~exist(name, 'dir')
+            mkdir(name);
+        end
+    catch
+        % Second chance if C:\tmp cannot be created
+        name = strrep(tempname,' ','_');   % Windows user names with spaces give problems, replace with underscore
     end
-
-    % name = strrep(tempname,' ','_');   % Windows user names with spaces give problems, replace with underscore
 
     in = cell(1, nargin-2);
 
@@ -88,6 +91,13 @@ if ispc
 
     if ERR~=0
         app.bartVersion = 'none';
+    end
+
+     % Delete the temporary folder
+    try
+        delete(strcat(name,filesep,'*'));
+        rmdir(name);
+    catch
     end
 
 end
