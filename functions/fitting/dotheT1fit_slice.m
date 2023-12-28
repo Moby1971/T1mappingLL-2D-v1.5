@@ -8,7 +8,7 @@ function [m0mapOut,t1mapOut,r2mapOut] = dotheT1fit_slice(inputImages,mask,tis,rS
 % Gustav Strijkers
 % Amsterdam UMC
 % g.j.strijkers@amsterdamumc.nl
-% 12/08/2022
+% Dec 2023
 %
 %------------------------------------------------------------
 
@@ -25,7 +25,8 @@ tis(delements) = [];
 inputImages(delements,:,:) = [];
 
 % Inversion recovery function
-irfun = @(x,xdata)abs(x(1)-x(2)*exp(-x(3)*xdata));
+% irfun = @(x,xdata)abs(x(1)-x(2)*exp(-x(3)*xdata));
+irfun = @(a,b,c,xdata)abs(a-b*exp(-c*xdata));
 opts = optimset('Display','off');
 
 % Pre-determine fit parameter estimates
@@ -54,7 +55,11 @@ parfor j=1:dimx
             yd = squeeze(ydata(j,k,:));
 
             % LSQ fit
-            x = lsqcurvefit(irfun,x0(j,k,:),tis,yd,[],[],opts);
+            % x = lsqcurvefit(irfun1,x0(j,k,:),tis,yd,[],[],opts);
+
+            % LSQ fit without toolbox
+            obj_fun = @(p) sum((yd-irfun(p(1), p(2), p(3), tis)).^2);
+            x = fminsearch(obj_fun, x0(j,k,:), opts);
 
             x1(j,k) = x(1);
             x2(j,k) = x(2);

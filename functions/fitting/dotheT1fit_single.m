@@ -16,9 +16,11 @@ function [AvalueOut,BvalueOut,m0ValueOut,t1ValueOut,r2ValueOut] = dotheT1fit_sin
 delements = find(tiSelection==0);
 tis(delements) = [];
 yData(delements) = [];
+xData = tis';
+clc;
 
 % Inversion recovery function
-irfun = @(x,xData)abs(x(1)-x(2)*exp(x(3)*xData));
+irfun = @(a,b,c,xdata)abs(a-b*exp(c*xdata));
 opts = optimset('Display','off');
 
 % Estimates
@@ -28,7 +30,11 @@ x0(2) = yData(1)+yData(end);
 x0(3) = -0.6931/tis(indx);
 
 % LSQ fit
-x = lsqcurvefit(irfun,x0,tis',yData,[],[],opts);
+% x = lsqcurvefit(irfun1,x0,xData,yData,[],[],opts);
+
+% LSQ fit without toolbox
+obj_fun = @(p) sum((yData - irfun(p(1), p(2), p(3), xData)).^2);
+x = fminsearch(obj_fun, x0, opts);
 
 % M0 and T1
 m0Value = abs(x(1));
