@@ -14,6 +14,9 @@ function data = sort2DsegmKspaceMRD(data, parameters)
 version = regexp(parameters.PPL,'\d*','Match');
 version = str2num(cell2mat(version(end))); %#ok<ST2NM>
 crit1 = version > 634;
+if version==606
+    crit1 = 1;
+end
 
 % FLASH yes or no ?
 crit2 = contains(parameters.PPL,"flash");

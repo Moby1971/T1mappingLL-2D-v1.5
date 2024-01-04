@@ -65,8 +65,8 @@ if app.LLRxyzEditField.Value > 0
     picsCommand = [picsCommand,' -RL:6:7:',num2str(app.LLRxyzEditField.Value),' -b',num2str(blocksize)];
 end
 
-if app.TVteEditField.Value > 0
-    picsCommand = [picsCommand,' -RT:32:0:',num2str(app.TVteEditField.Value)];
+if app.TVtiEditField.Value > 0
+    picsCommand = [picsCommand,' -RT:32:0:',num2str(app.TVtiEditField.Value)];
 end
 
 if app.TVdynEditField.Value > 0
