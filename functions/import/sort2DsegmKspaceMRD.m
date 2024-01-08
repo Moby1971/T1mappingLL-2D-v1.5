@@ -8,14 +8,18 @@
 %------------------------------------------------------------
 
 
-function data = sort2DsegmKspaceMRD(data, parameters)
+function data = sort2DsegmKspaceMRD(data, parameters, toggle)
 
 % PPL version
 version = regexp(parameters.PPL,'\d*','Match');
 version = str2num(cell2mat(version(end))); %#ok<ST2NM>
 crit1 = version > 634;
 if version==606
-    crit1 = 1;
+    crit1 = true;
+end
+
+if toggle
+    crit1 = ~crit1;
 end
 
 % FLASH yes or no ?
