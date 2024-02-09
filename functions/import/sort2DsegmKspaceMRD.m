@@ -3,7 +3,7 @@
 % Gustav Strijkers
 % Amsterdam UMC
 % g.j.strijkers@amsterdamumc.nl
-% 26/4/2023
+% Feb 2024
 %
 %------------------------------------------------------------
 
@@ -14,9 +14,9 @@ function data = sort2DsegmKspaceMRD(data, parameters, toggle)
 version = regexp(parameters.PPL,'\d*','Match');
 version = str2num(cell2mat(version(end))); %#ok<ST2NM>
 crit1 = version > 634;
-if version==606
-    crit1 = true;
-end
+% if version==606
+%     crit1 = true;
+% end
 
 if toggle
     crit1 = ~crit1;
