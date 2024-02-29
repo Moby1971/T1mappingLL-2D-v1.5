@@ -17,3 +17,4 @@ functions/reconstruction/FFTreco.m
 functions/registration/registerImages.m
 functions/segment/apply_threshold_t1.m
 functions/unRing/unRing.m
+manual/T1mappLL - manual.pages
