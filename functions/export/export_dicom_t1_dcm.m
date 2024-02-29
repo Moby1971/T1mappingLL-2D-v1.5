@@ -1,4 +1,4 @@
-function export_dicom_t1_dcm(directory,dcm_files_path,m0map,t1map,r2map,parameters)
+function export_dicom_t1_dcm(directory,dcm_files_path,m0map,t1map,r2map,parameters,tag)
 
 %------------------------------------------------------------
 %
@@ -8,7 +8,7 @@ function export_dicom_t1_dcm(directory,dcm_files_path,m0map,t1map,r2map,paramete
 % Gustav Strijkers
 % Amsterdam UMC
 % g.j.strijkers@amsterdamumc.nl
-% 12/08/2022
+% Feb 2024
 %
 %------------------------------------------------------------
 
@@ -54,36 +54,50 @@ for dynamic = 1:dimd
 
 end
 
-% create folders if not exist, and delete folders content
-outDir1 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"1");
-outDir2 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"2");
-outDir3 = strcat(directory,filesep,"DICOM",filesep,num2str(dcm_header(1).SeriesNumber),"T1",filesep,"3");
-
-if ~exist(outDir1, 'dir')
-    mkdir(outDir1);
+% Create new directory
+ready = false;
+cnt = 1;
+while ~ready
+    folderName = strcat(directory,filesep,'DICOM',filesep,tag,'T1',filesep,num2str(cnt),filesep);
+    if ~exist(folderName, 'dir')
+        mkdir(folderName);
+        ready = true;
+    end
+    cnt = cnt + 1;
 end
-delete(strcat(outDir1,filesep,'*'));
 
-if ~exist(outDir2, 'dir')
-    mkdir(outDir2);
+dir41 = 'T1';
+dir42 = 'M0';
+dir43 = 'R2';
+
+output_directory1 = strcat(folderName,dir41);
+if ~exist(output_directory1, 'dir') 
+    mkdir(output_directory1); 
 end
-delete(strcat(outDir2,filesep,'*'));
+delete(strcat(output_directory1,filesep,'*'));
 
-if ~exist(outDir3, 'dir')
-    mkdir(outDir3);
+output_directory2 = strcat(folderName,dir42);
+if ~exist(output_directory2, 'dir')
+    mkdir(output_directory2); 
 end
-delete(strcat(outDir3,filesep,'*'));
+delete(strcat(output_directory2,filesep,'*'));
 
+output_directory3 = strcat(folderName,dir43);
+if ~exist(output_directory3, 'dir')
+    mkdir(output_directory3); 
+end
+delete(strcat(output_directory3,filesep,'*'));
 
 
 % Export the T1 map Dicoms
+seriesInstanceID = dicomuid;
 for dynamic = 1:dimd
 
     for slice=1:dimz
 
         dcm_header(slice,dynamic).ProtocolName = 'T1-map';
         dcm_header(slice,dynamic).SequenceName = 'T1-map';
-        dcm_header(slice,dynamic).EchoTime = 1.1;
+        dcm_header(slice,dynamic).SeriesInstanceUID = seriesInstanceID;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\T1';
 
         fn = strcat('0000',num2str(slice));
@@ -92,7 +106,7 @@ for dynamic = 1:dimd
         dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = strcat(outDir1,filesep,'T1-slice',fn,'-dynamic',dn,'.dcm');
+        fname = strcat(output_directory1,filesep,'T1-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(t1map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 
@@ -103,13 +117,14 @@ end
 
 
 % Export the M0 map Dicoms
+seriesInstanceID = dicomuid;
 for dynamic = 1:dimd
 
     for slice=1:dimz
 
         dcm_header(slice,dynamic).ProtocolName = 'M0-map';
         dcm_header(slice,dynamic).SequenceName = 'M0-map';
-        dcm_header(slice,dynamic).EchoTime = 1.2;
+        dcm_header(slice,dynamic).SeriesInstanceUID = seriesInstanceID;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\M0';
 
         fn = strcat('0000',num2str(slice));
@@ -117,7 +132,7 @@ for dynamic = 1:dimd
         dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = strcat(outDir2,filesep,'M0-slice',fn,'-dynamic',dn,'.dcm');
+        fname = strcat(output_directory2,filesep,'M0-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(m0map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 
@@ -128,13 +143,14 @@ end
 
 
 % Export the  R^2 map Dicoms
+seriesInstanceID = dicomuid;
 for dynamic = 1:dimd
 
     for slice=1:dimz
 
-        dcm_header(slice,dynamic).ProtocolName = 'R^2-map';
-        dcm_header(slice,dynamic).SequenceName = 'R^2-map';
-        dcm_header(slice,dynamic).EchoTime = 1.3;
+        dcm_header(slice,dynamic).ProtocolName = 'R2-map';
+        dcm_header(slice,dynamic).SequenceName = 'R2-map';
+        dcm_header(slice,dynamic).SeriesInstanceUID = seriesInstanceID;
         dcm_header(slice,dynamic).ImageType = 'DERIVED\RELAXATION\R2';
 
         fn = strcat('0000',num2str(slice));
@@ -142,7 +158,7 @@ for dynamic = 1:dimd
         dn = strcat('0000',num2str(dynamic));
         dn = dn(size(dn,2)-4:size(dn,2));
 
-        fname = strcat(outDir3,filesep,'R2-slice',fn,'-dynamic',dn,'.dcm');
+        fname = strcat(output_directory3,filesep,'R2-slice',fn,'-dynamic',dn,'.dcm');
         image = rot90(squeeze(cast(round(100*r2map(:,:,slice,dynamic)),'uint16')));
         dicomwrite(image, fname, dcm_header(slice,dynamic));
 

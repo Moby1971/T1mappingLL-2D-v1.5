@@ -1,4 +1,4 @@
-function export_gif_t1(gifexportpath,t1map,m0map,r2map,tag,T1MapScale,t1cmap,m0cmap,r2cmap,aspect,parameters,rsquare)
+function export_gif_t1(gifExportBase,t1map,m0map,r2map,tag,T1MapScale,t1cmap,m0cmap,r2cmap,aspect,parameters,rsquare)
 
 %------------------------------------------------------------
 % Exports T1 maps and M0 maps and R^2 maps to animated gif
@@ -7,12 +7,22 @@ function export_gif_t1(gifexportpath,t1map,m0map,r2map,tag,T1MapScale,t1cmap,m0c
 % Gustav Strijkers
 % Amsterdam UMC
 % g.j.strijkers@amsterdamumc.nl
-% Sept 2023
+% Feb 2024
 %
 %------------------------------------------------------------
 
-if ~exist(gifexportpath, 'dir')
-    mkdir(gifexportpath);
+
+
+% Create new directory
+ready = false;
+cnt = 1;
+while ~ready
+    gifexportpath = strcat(gifExportBase,tag,'T1',filesep,num2str(cnt),filesep);
+    if ~exist(gifexportpath, 'dir')
+        mkdir(gifexportpath);
+        ready = true;
+    end
+    cnt = cnt + 1;
 end
 
 % Dimensions
