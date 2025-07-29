@@ -27,3 +27,7 @@ functions/export/niftii/dicm_save.m
 functions/export/niftii/nii_tool.m
 functions/fitting/dotheSRT1fit_slice.m
 functions/fitting/dotheSRT1fit_single.m
+functions/export/niftii/nii_viewer.m
+functions/export/niftii/nii_xform.m
+functions/registration/registerImagesIR.m
+functions/registration/registerImagesSR.m
