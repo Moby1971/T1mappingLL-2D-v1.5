@@ -96,24 +96,25 @@ function varargout=elastix(movingImage,fixedImage,outputDir,paramFile,varargin)
 
 
 %Confirm that the elastix binary is present and can run
-[~,elastix_version] = system('elastix --version');
+%[~,elastix_version] = system('elastix --version');
 
-r=regexp(elastix_version,'error', 'once');
-if ~isempty(r)
+%r=regexp(elastix_version,'error', 'once');
+%if ~isempty(r)
     %fprintf('\n*** ERROR starting elastix binary:\n%s\n',elastix_version)
-    return
-end
+%    return
+%end
 
-r=regexp(elastix_version,'version', 'once');
-if isempty(r)
+%r=regexp(elastix_version,'version', 'once');
+%if isempty(r)
     %fprintf('\n*** ERROR: Unable to find elastix binary in system path. Quitting ***\n')
-    return
-end
+%    return
+%end
 
-if nargin==0
-    help(mfilename)
-    return
-end
+% if nargin==0
+%     help(mfilename)
+%     return
+% end
+
 
 %If the user supplies one input argument only and this is is a string then
 %we assume it's a request for the help or version so we run it
@@ -206,28 +207,28 @@ end
 %----------------------------------------------------------------------
 % *** Conduct the registration ***
 
-if strcmp('.',outputDir)
-    [~,dirName]=fileparts(pwd);
-else
-    [~,dirName]=fileparts(outputDir);
-end
-
+% if strcmp('.',outputDir)
+%     [~,dirName]=fileparts(pwd);
+% else
+%    [~,dirName] = fileparts(outputDir);
+% end
+dirName = outputDir;
 
 % Create and move the images
 movingFname=[dirName,'_moving']; %TODO: so the file name contains the dir name?
 mhd_write(movingImage,movingFname);
-if ~strcmp(outputDir,'.')
-    if ~movefile([movingFname,'.*'],outputDir); error('Can''t move files'), end
-end
+%if ~strcmp(outputDir,'.')
+%    if ~movefile([movingFname,'.*'],outputDir); error('Can''t move files'), end
+%end
 
 %create fixedImage only if we're registering to an image. parameters
 %may have been supplied instead
 if isnumeric(fixedImage)
     targetFname=[dirName,'_target'];
     mhd_write(fixedImage,targetFname);
-    if ~strcmp(outputDir,'.') %Don't copy if we're already in the directory
-        if ~movefile([targetFname,'.*'],outputDir); error('Can''t move files'), end
-    end
+  %  if ~strcmp(outputDir,'.') %Don't copy if we're already in the directory
+  %      if ~movefile([targetFname,'.*'],outputDir); error('Can''t move files'), end
+  %  end
 end
 
 %Build the parameter file(s)
@@ -295,10 +296,16 @@ end
 
 
 %Build the the appropriate command
+% CMD=sprintf('elastix -f "%s.mhd" -m "%s.mhd" -out "%s" ',...
+%     fullfile(outputDir,targetFname),...
+%     fullfile(outputDir,movingFname),...
+%     outputDir);
+
 CMD=sprintf('elastix -f "%s.mhd" -m "%s.mhd" -out "%s" ',...
-    fullfile(outputDir,targetFname),...
-    fullfile(outputDir,movingFname),...
+    fullfile(targetFname),...
+    fullfile(movingFname),...
     outputDir);
+
 
 
 CMD = [CMD,initCMD];
@@ -316,7 +323,7 @@ end
 
 %store a copy of the command to the directory
 cmdFid = fopen(fullfile(outputDir,'CMD'),'w');
-%fprintf(cmdFid,'%s\n',CMD);
+fprintf(cmdFid,'%s\n',CMD);
 fclose(cmdFid);
 
 
@@ -326,7 +333,15 @@ fclose(cmdFid);
 % Run the command and report back if it failed
 %fprintf('Running: %s\n',CMD)
 
-[status,result]=system(CMD);
+CMD = string(CMD);
+
+
+[status,result] = system(CMD);
+
+disp(CMD)
+disp(status);
+disp(result);
+
 
 if status %Things failed. Oh dear.
     if status
